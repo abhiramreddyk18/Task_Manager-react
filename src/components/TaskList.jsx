@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { deleteTask, markTask, viewTaskDetails } from '../store/TaskSlice';
 
-const TaskList = ({ tasks, deleteTask, markTask, viewTaskDetails }) => {
-  // State to store selected sort option
+const TaskList = ({ tasks }) => {
+  const dispatch = useDispatch();
   const [sortOption, setSortOption] = useState('none');
 
-  // Function to sort tasks based on the selected option
   const sortTasks = (tasks, option) => {
     switch (option) {
       case 'completed':
@@ -23,8 +24,19 @@ const TaskList = ({ tasks, deleteTask, markTask, viewTaskDetails }) => {
     }
   };
 
-  // Update the task list when sort option changes
   const sortedTasks = sortTasks(tasks, sortOption);
+
+  const handleDelete = (taskId) => {
+    dispatch(deleteTask(taskId));
+  };
+
+  const handleMark = (taskId) => {
+    dispatch(markTask(taskId));
+  };
+
+  const handleViewDetails = (taskId) => {
+    dispatch(viewTaskDetails(taskId));
+  };
 
   return (
     <div className="app-container">
@@ -47,19 +59,17 @@ const TaskList = ({ tasks, deleteTask, markTask, viewTaskDetails }) => {
             <p>Due: {task.dueDate}</p>
             <p className="status">Status: {task.completed ? 'Completed' : 'Not Completed'}</p>
             <div className="button-container">
-              <button onClick={() => markTask(task.id)} className="mark-btn">
+              <button onClick={() => handleMark(task.id)} className="mark-btn">
                 {task.completed ? 'Unmark' : 'Mark'} as Completed
               </button>
-              <button onClick={() => deleteTask(task.id)} className="delete-btn">Delete</button>
-              {}
+              <button onClick={() => handleDelete(task.id)} className="delete-btn">Delete</button>
               <Link
-  to={`/tasks/${task.id}`}
-  className="view-btn"
-  onClick={() => viewTaskDetails(task.id)} // This will trigger the selected task update
->
-  View Details
-</Link>
-
+                to={`/tasks/${task.id}`}
+                className="view-btn"
+                onClick={() => handleViewDetails(task.id)}
+              >
+                View Details
+              </Link>
             </div>
           </li>
         ))}

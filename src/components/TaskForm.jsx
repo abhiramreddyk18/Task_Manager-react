@@ -1,19 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { addTask } from '../store/TaskSlice';
-import { v4 as uuidv4 } from 'uuid'; // Optionally use uuid for ID generation
+import { v4 as uuidv4 } from 'uuid'; 
+import {predefinedTasks} from './data';
 
 const TaskForm = () => {
   const dispatch = useDispatch();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
-  const [error, setError] = useState(''); // State for error message
+  const [error, setError] = useState(''); 
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Basic validation for empty fields
     if (!title || !dueDate) {
       setError('Title and Due Date are required!');
       return;
@@ -25,26 +24,38 @@ const TaskForm = () => {
     }
 
     const newTask = {
-      id: uuidv4(), // Using uuid for a unique task ID
+      id: uuidv4(), 
       title,
       description,
       dueDate,
       completed: false,
     };
 
-    // Dispatch the action to add the task
+   
     dispatch(addTask(newTask));
 
-    // Clear the form
+   
     setTitle('');
     setDescription('');
     setDueDate('');
-    setError(''); // Clear the error message after a successful submit
+    setError(''); 
   };
+
+
+  
+ 
+
+  useEffect(() => {
+    
+    predefinedTasks.forEach((task) => {
+      const taskWithId = { ...task, id: uuidv4() };
+      dispatch(addTask(taskWithId)); 
+    });
+  }, [dispatch]);
 
   return (
     <form onSubmit={handleSubmit} className="task-form">
-      {error && <p className="error-message">{error}</p>} {/* Display error message if exists */}
+      {error && <p className="error-message">{error}</p>} 
 
       <input
         type="text"

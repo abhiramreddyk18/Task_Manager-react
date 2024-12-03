@@ -1,5 +1,4 @@
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     background: #f4f4f4;
@@ -7,7 +6,7 @@ body {
   
 
   .head{
-   
+    font-family: Arial;
     text-align: center
   }
 
@@ -147,6 +146,10 @@ button:hover {
   box-sizing: border-box;
 }
 
+.input-field::placeholder{
+  font-family: Arial;
+}
+
 
 .textarea-field {
   padding: 10px;
@@ -156,6 +159,10 @@ button:hover {
   resize: vertical;
   width: 100%;
   box-sizing: border-box;
+}
+
+.textarea-field::placeholder{
+  font-family: Arial;
 }
 
 
