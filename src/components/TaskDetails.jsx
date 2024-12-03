@@ -1,6 +1,15 @@
-import React from 'react';
 
-const TaskDetails = ({ task, setSelectedTask }) => {
+
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const TaskDetails = ({ task }) => {
+  const navigate = useNavigate();
+
+  if (!task) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="task-details">
       <h2>Task Details</h2>
@@ -8,7 +17,9 @@ const TaskDetails = ({ task, setSelectedTask }) => {
       <p>{task.description}</p>
       <p>Due Date: {task.dueDate}</p>
       <p>Status: {task.completed ? 'Completed' : 'Not Completed'}</p>
-      <button onClick={() => setSelectedTask(null)} className="back-btn">Back to List</button>
+      <button onClick={() => navigate('/tasks')} className="back-btn">
+        Back to List
+      </button>
     </div>
   );
 };

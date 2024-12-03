@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const TaskList = ({ tasks, deleteTask, markTask, viewTaskDetails }) => {
+  // State to store selected sort option
   const [sortOption, setSortOption] = useState('none');
 
-  const sortedTasks = () => {
-    const now = new Date();
-    switch (sortOption) {
+  // Function to sort tasks based on the selected option
+  const sortTasks = (tasks, option) => {
+    switch (option) {
       case 'completed':
         return tasks.filter(task => task.completed);
       case 'notCompleted':
         return tasks.filter(task => !task.completed);
       case 'overdue':
-        return tasks.filter(task => new Date(task.dueDate) < now && !task.completed);
+        return tasks.filter(task => new Date(task.dueDate) < new Date() && !task.completed);
       case 'dueDateAsc':
         return [...tasks].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
       case 'dueDateDesc':
@@ -21,50 +23,48 @@ const TaskList = ({ tasks, deleteTask, markTask, viewTaskDetails }) => {
     }
   };
 
+  // Update the task list when sort option changes
+  const sortedTasks = sortTasks(tasks, sortOption);
+
   return (
     <div className="app-container">
-    <div className="sort-options">
-      <select onChange={(e) => setSortOption(e.target.value)} value={sortOption}>
-        <option value="none">Sort By</option>
-        <option value="completed">Completed</option>
-        <option value="notCompleted">Not Completed</option>
-        <option value="overdue">Overdue</option>
-        <option value="dueDateAsc">Due Date (Asc)</option>
-        <option value="dueDateDesc">Due Date (Desc)</option>
-      </select>
-    </div>
+      <div className="sort-options">
+        <select onChange={(e) => setSortOption(e.target.value)} value={sortOption}>
+          <option value="none">Sort By</option>
+          <option value="completed">Completed</option>
+          <option value="notCompleted">Not Completed</option>
+          <option value="overdue">Overdue</option>
+          <option value="dueDateAsc">Due Date (Asc)</option>
+          <option value="dueDateDesc">Due Date (Desc)</option>
+        </select>
+      </div>
 
-    <ul className="task-list">
-      {sortedTasks().map((task) => (
-        <li key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
-          <h3>{task.title}</h3>
-          <p>{task.description}</p>
-          <p>Due: {task.dueDate}</p>
-          <p className="status">Status: {task.completed ? 'Completed' : 'Not Completed'}</p>
-          <div className="button-container">
-            <button 
-              onClick={() => markTask(task.id)} 
-              className="mark-btn"
-            >
-              {task.completed ? 'Unmark' : 'Mark'} as Completed
-            </button>
-            <button 
-              onClick={() => deleteTask(task.id)} 
-              className="delete-btn"
-            >
-              Delete
-            </button>
-            <button 
-              onClick={() => viewTaskDetails(task.id)} 
-              className="view-details-btn"
-            >
-              View Details
-            </button>
-          </div>
-        </li>
-      ))}
-    </ul>
-  </div>
+      <ul className="task-list">
+        {sortedTasks.map((task) => (
+          <li key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
+            <h3>{task.title}</h3>
+            <p>{task.description}</p>
+            <p>Due: {task.dueDate}</p>
+            <p className="status">Status: {task.completed ? 'Completed' : 'Not Completed'}</p>
+            <div className="button-container">
+              <button onClick={() => markTask(task.id)} className="mark-btn">
+                {task.completed ? 'Unmark' : 'Mark'} as Completed
+              </button>
+              <button onClick={() => deleteTask(task.id)} className="delete-btn">Delete</button>
+              {}
+              <Link
+  to={`/tasks/${task.id}`}
+  className="view-btn"
+  onClick={() => viewTaskDetails(task.id)} // This will trigger the selected task update
+>
+  View Details
+</Link>
+
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 

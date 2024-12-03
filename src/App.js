@@ -1,52 +1,70 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { BrowserRouter as Router, Routes, Route,Navigate } from 'react-router-dom';
+import { addTask, deleteTask, markTask } from './store/TaskSlice';
+import './styles.css';
 import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
 import TaskDetails from './components/TaskDetails';
-import './styles.css';
-
 
 const App = () => {
-  const [tasks, setTasks] = useState([]);
-  const [selectedTask, setSelectedTask] = useState(null);
+  const dispatch = useDispatch();
+  const tasks = useSelector((state) => state.tasks.tasks);
+  const selectedTask = useSelector((state) => state.tasks.selectedTask);
 
-  const addTask = (newTask) => {
-    setTasks([...tasks, newTask]);
+  const handleAddTask = (newTask) => {
+    dispatch(addTask(newTask));
   };
 
-  const deleteTask = (id) => {
-    setTasks(tasks.filter(task => task.id !== id));
+  const handleDeleteTask = (id) => {
+    dispatch(deleteTask(id));
   };
 
-  const markTask = (id) => {
-    setTasks(tasks.map(task => 
-      task.id === id ? { ...task, completed: !task.completed } : task
-    ));
+  const handleMarkTask = (id) => {
+    dispatch(markTask(id));
   };
 
-  const viewTaskDetails = (id) => {
-    const task = tasks.find(task => task.id === id);
-    setSelectedTask(task);
+  const handleViewTaskDetails = (id) => {
+    const task = tasks.find((task) => task.id === id);
+    dispatch({ type: 'tasks/setSelectedTask', payload: task });
   };
 
   return (
-    <div className="app">
-      
-    <h1 className='head'>Task Management</h1>
-    {selectedTask ? (
-      <TaskDetails task={selectedTask} setSelectedTask={setSelectedTask} />
-    ) : (
-      <>
-        <TaskForm addTask={addTask} />
-        <TaskList 
-          tasks={tasks} 
-          deleteTask={deleteTask} 
-          markTask={markTask} 
-          viewTaskDetails={viewTaskDetails} 
-        />
-      </>
-    )}
-  </div>
-  
+    <Router>
+      <div className="app">
+
+        <h1 className="head">Task Management</h1>
+
+        <Routes>
+        <Route path="/" element={<Navigate to="/tasks" />} />
+          <Route
+            exact
+            path="/tasks"
+            element={
+              <>
+                <TaskForm addTask={handleAddTask} />
+                <TaskList
+                  tasks={tasks}
+                  deleteTask={handleDeleteTask}
+                  markTask={handleMarkTask}
+                  viewTaskDetails={handleViewTaskDetails}
+                />
+              </>
+            }
+          />
+          <Route
+            path="/tasks/:id"
+            element={
+              selectedTask ? (
+                <TaskDetails task={selectedTask} />
+              ) : (
+                <div>Loading...</div>
+              )
+            }
+          />
+        </Routes>
+      </div>
+    </Router>
   );
 };
 
