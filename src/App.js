@@ -1,25 +1,53 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import TaskForm from './components/TaskForm';
+import TaskList from './components/TaskList';
+import TaskDetails from './components/TaskDetails';
+import './styles.css';
 
-function App() {
+
+const App = () => {
+  const [tasks, setTasks] = useState([]);
+  const [selectedTask, setSelectedTask] = useState(null);
+
+  const addTask = (newTask) => {
+    setTasks([...tasks, newTask]);
+  };
+
+  const deleteTask = (id) => {
+    setTasks(tasks.filter(task => task.id !== id));
+  };
+
+  const markTask = (id) => {
+    setTasks(tasks.map(task => 
+      task.id === id ? { ...task, completed: !task.completed } : task
+    ));
+  };
+
+  const viewTaskDetails = (id) => {
+    const task = tasks.find(task => task.id === id);
+    setSelectedTask(task);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <div className="app">
+      
+    <h1 className='head'>Task Management</h1>
+    {selectedTask ? (
+      <TaskDetails task={selectedTask} setSelectedTask={setSelectedTask} />
+    ) : (
+      <>
+        <TaskForm addTask={addTask} />
+        <TaskList 
+          tasks={tasks} 
+          deleteTask={deleteTask} 
+          markTask={markTask} 
+          viewTaskDetails={viewTaskDetails} 
+        />
+      </>
+    )}
+  </div>
+  
   );
-}
+};
 
 export default App;
